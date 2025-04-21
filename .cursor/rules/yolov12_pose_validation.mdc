@@ -15,7 +15,7 @@ YOLOv12姿态模型验证是评估模型性能的关键步骤，通过`PoseValid
 - [BaseValidator](mdc:ultralytics/engine/validator.py) - 基础验证器类，位于`ultralytics/engine/validator.py`
 
 ### 评估指标计算
-- [PoseMetrics](mdc:ultralytics/utils/metrics.py) - 姿态指标计算函数，位于`ultralytics/utils/metrics.py`
+- [PoseMetrics](mdc:ultralytics/utils/metrics.py) - 姿态指标计算类，位于`ultralytics/utils/metrics.py`
 - 包含OKS (Object Keypoint Similarity) 计算
 - AP (Average Precision) 和AR (Average Recall) 计算
 
@@ -59,7 +59,7 @@ preds = non_max_suppression(preds, ...)  # 应用NMS
 
 ### 6. 结果可视化
 - [plot_images](mdc:ultralytics/utils/plotting.py) - 图像绘制函数，位于`ultralytics/utils/plotting.py`
-- [plot_poses](mdc:ultralytics/utils/plotting.py) - 姿态绘制函数，位于`ultralytics/utils/plotting.py`
+- 姿态可视化代码包含在plotting.py中，使用专门的姿态调色板(pose_palette)和关键点连接定义
 - 可视化预测结果与真实标签的对比
 
 ## 关键验证参数

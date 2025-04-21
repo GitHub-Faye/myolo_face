@@ -24,7 +24,7 @@ YOLOv12姿态模型预测是通过`PosePredictor`类实现的，该过程将输�
 - [scale_coords](mdc:ultralytics/utils/ops.py) - 关键点坐标缩放，位于`ultralytics/utils/ops.py`
 
 ### 可视化工具
-- [plot_poses](mdc:ultralytics/utils/plotting.py) - 姿态可视化函数，位于`ultralytics/utils/plotting.py`
+- [Annotator.kpts](mdc:ultralytics/utils/plotting.py) - 姿态关键点绘制方法，位于`ultralytics/utils/plotting.py`的`Annotator`类中
 - [Results类](mdc:ultralytics/engine/results.py) - 结果处理类，位于`ultralytics/engine/results.py`
 
 ## 预测过程详细步骤

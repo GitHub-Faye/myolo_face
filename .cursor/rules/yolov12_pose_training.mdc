@@ -15,7 +15,7 @@ YOLOv12姿态模型训练是基于通用YOLO训练框架构建的，专门针对
 - [BaseTrainer](mdc:ultralytics/engine/trainer.py) - 基础训练器类，位于`ultralytics/engine/trainer.py`
 
 ### 损失函数
-- [v8PoseLoss](mdc:ultralytics/models/yolo/pose/train.py) - 姿态特定损失函数，位于`ultralytics/models/yolo/pose/train.py`内
+- [v8PoseLoss](mdc:ultralytics/utils/loss.py) - 姿态特定损失函数，位于`ultralytics/utils/loss.py`
 - 包含边界框损失和关键点损失两部分
 
 ### 优化器和调度器
@@ -72,8 +72,8 @@ self.setup_metrics()  # 设置评估指标
 - image_size: 一般为640x640
 
 ### 姿态特定配置
-- [yolov12-pose.yaml](mdc:ultralytics/cfg/models/v12/yolov12-pose.yaml) - 位于`ultralytics/cfg/models/v12/yolov12-pose.yaml`
-- kpt_shape: [17, 3] （17个关键点，每个关键点有x,y,visibility三个值）
+- [yolov12n-pose.yaml](mdc:ultralytics/cfg/models/v12/yolov12n-pose.yaml) - 位于`ultralytics/cfg/models/v12/yolov12-pose.yaml`
+- 人脸关键点模型中使用kpt_shape: [5, 3]（5个关键点，每个关键点有x,y,visibility三个值）
 - 姿态损失权重配置
 
 ## 训练技巧与最佳实践
