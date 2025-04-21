@@ -1,0 +1,83 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# YOLOv12姿态模型训练过程详解
+
+## 训练流程概述
+YOLOv12姿态模型训练是基于通用YOLO训练框架构建的，专门针对关键点检测进行了优化。训练过程通过`PoseTrainer`类实现，整体流程包括数据准备、模型初始化、训练循环、验证评估和结果保存。
+
+## 核心训练组件
+
+### 训练器类
+- [PoseTrainer](mdc:ultralytics/models/yolo/pose/train.py) - 位于`ultralytics/models/yolo/pose/train.py`
+- [BaseTrainer](mdc:ultralytics/engine/trainer.py) - 基础训练器类，位于`ultralytics/engine/trainer.py`
+
+### 损失函数
+- [v8PoseLoss](mdc:ultralytics/models/yolo/pose/train.py) - 姿态特定损失函数，位于`ultralytics/models/yolo/pose/train.py`内
+- 包含边界框损失和关键点损失两部分
+
+### 优化器和调度器
+- [build_optimizer](mdc:ultralytics/engine/trainer.py) - 优化器构建函数，位于`ultralytics/engine/trainer.py`
+- [build_scheduler](mdc:ultralytics/engine/trainer.py) - 学习率调度器，位于`ultralytics/engine/trainer.py`
+
+### 验证组件
+- [PoseValidator](mdc:ultralytics/models/yolo/pose/val.py) - 验证器类，位于`ultralytics/models/yolo/pose/val.py`
+- 计算mAP_box和mAP_pose指标
+
+## 训练过程详细步骤
+
+### 1. 初始化训练环境
+```python
+# 在PoseTrainer的__init__方法中
+self.setup_model()  # 设置模型
+self.setup_optimizer()  # 设置优化器
+self.setup_scheduler()  # 设置学习率调度器
+self.setup_loss_functions()  # 设置损失函数
+self.setup_metrics()  # 设置评估指标
+```
+
+### 2. 数据集准备
+- [build_dataloader](mdc:ultralytics/data/build.py) - 位于`ultralytics/data/build.py`
+- 使用COCO-Pose数据集格式
+- 应用数据增强，包括MixUp、Mosaic、随机透视变换等
+
+### 3. 损失函数计算
+- 边界框损失：使用DFL损失、CIoU损失等
+- 关键点损失：基于关键点坐标和可见性的特殊损失函数
+- 损失计算路径：`PoseTrainer.criterion() -> v8PoseLoss() -> compute_loss()`
+
+### 4. 训练循环
+- [PoseTrainer.train_epoch](mdc:ultralytics/models/yolo/pose/train.py) - 位于`ultralytics/models/yolo/pose/train.py`
+- [BaseTrainer._do_train](mdc:ultralytics/engine/trainer.py) - 位于`ultralytics/engine/trainer.py`
+- 迭代数据批次、前向传播、损失计算、反向传播、优化器步进
+
+### 5. 验证评估
+- 使用`PoseValidator`对训练模型进行周期性评估
+- 计算边界框AP和关键点AP指标
+- 评估OKS (Object Keypoint Similarity) 分数
+
+### 6. 模型保存和导出
+- [BaseTrainer.save_model](mdc:ultralytics/engine/trainer.py) - 位于`ultralytics/engine/trainer.py`
+- 保存最佳模型权重和最终模型权重
+- 可导出为ONNX、TorchScript等格式
+
+## 关键超参数设置
+
+### 训练配置
+- [train.py](mdc:ultralytics/engine/trainer.py) - 基础配置位于`ultralytics/engine/trainer.py`
+- epochs: 通常设为300-500
+- batch_size: 根据GPU内存调整，典型值为16-64
+- image_size: 一般为640x640
+
+### 姿态特定配置
+- [yolov12-pose.yaml](mdc:ultralytics/cfg/models/v12/yolov12-pose.yaml) - 位于`ultralytics/cfg/models/v12/yolov12-pose.yaml`
+- kpt_shape: [17, 3] （17个关键点，每个关键点有x,y,visibility三个值）
+- 姿态损失权重配置
+
+## 训练技巧与最佳实践
+- 使用预训练的YOLOv12检测模型初始化权重
+- 采用渐进式学习策略，先小尺寸，再大尺寸
+- 关键点检测通常需要更精细的特征图，建议保留高分辨率特征
+- 姿态训练对边界框质量敏感，先确保稳定的检测性能
